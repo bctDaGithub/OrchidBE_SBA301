@@ -1,32 +1,21 @@
 package org.example.orchidbe.command.entities;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "roles")
-public class Role {
+@Getter
+@Setter
+@Data
+public class RoleEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="role_id")
-    private long roleId;
+    private Long roleId;
 
     @Column(name="role_name", nullable = false, unique = true)
     private String roleName;
 
-    public long getId() {
-        return roleId;
-    }
-
-    public void setId(long id) {
-        this.roleId = id;
-    }
-
-    public String getRoleName() {
-        return roleName;
-    }
-
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
-    }
 }

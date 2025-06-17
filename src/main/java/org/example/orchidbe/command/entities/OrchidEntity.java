@@ -1,9 +1,6 @@
 package org.example.orchidbe.command.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.Set;
@@ -11,15 +8,32 @@ import java.util.Set;
 @Entity
 @Table(name = "orchids")
 @Data
-public class Orchid {
+public class OrchidEntity {
     @Id
-    private int orchidId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long orchidId;
     private String orchidName;
     private String orchidDescription;
     private double price;
+
+    @Column(columnDefinition = "NVARCHAR(MAX)")
     private String orchidUrl;
     private boolean isNatural;
     private boolean isAvailable;
-    @OneToMany(mappedBy = "order")
-    private Set<OrderDetail> orderDetails;
+
+    @OneToMany(mappedBy = "orchidEntity")
+    private Set<OrderDetailEntity> orderDetailEntities;
+
+    public OrchidEntity(String orchidName, String orchidDescription, double price, String orchidUrl, boolean natural)  {
+        this.orchidName = orchidName;
+        this.orchidDescription = orchidDescription;
+        this.price = price;
+        this.orchidUrl = orchidUrl;
+        this.isNatural = natural;
+        this.isAvailable = true;
+    }
+
+    public OrchidEntity() {
+
+    }
 }

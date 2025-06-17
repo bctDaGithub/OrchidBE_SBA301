@@ -1,4 +1,4 @@
-package org.example.orchidbe.events;
+package org.example.orchidbe.events.account;
 
 import lombok.Data;
 

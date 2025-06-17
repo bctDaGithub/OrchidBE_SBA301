@@ -1,4 +1,10 @@
-package org.example.orchidbe.command.repository;
+package org.example.orchidbe.command.repositories;
 
-public interface AccountRepository  {
+import org.example.orchidbe.command.entities.AccountEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface AccountRepository extends JpaRepository<AccountEntity,Long> {
+
 }
