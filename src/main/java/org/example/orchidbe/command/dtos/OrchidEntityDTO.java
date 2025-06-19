@@ -1,4 +1,4 @@
-package org.example.orchidbe.command.dto;
+package org.example.orchidbe.command.dtos;
 
 import lombok.Data;
 import lombok.Getter;

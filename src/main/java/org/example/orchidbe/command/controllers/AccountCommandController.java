@@ -1,11 +1,12 @@
 package org.example.orchidbe.command.controllers;
 
-import org.example.orchidbe.command.dto.AccountEntityDTO;
+import org.example.orchidbe.command.dtos.AccountEntityDTO;
 import org.example.orchidbe.command.services.define.IAccountCommandService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("${api.command-path}/account")
 public class AccountCommandController {
@@ -29,6 +30,7 @@ public class AccountCommandController {
     public ResponseEntity<String> updateAccount(@RequestBody AccountEntityDTO accountEntityDTO) {
         accountCommandService.updateAccount(
                 accountEntityDTO.getId(),
+
                 accountEntityDTO.getUserName(),
                 accountEntityDTO.getCurrentPassword(),
                 accountEntityDTO.getNewPassword(),

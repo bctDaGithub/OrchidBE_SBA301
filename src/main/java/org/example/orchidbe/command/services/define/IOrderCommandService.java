@@ -1,9 +1,6 @@
 package org.example.orchidbe.command.services.define;
 
-import org.example.orchidbe.command.dto.CreateOrderRequestDTO;
-import org.example.orchidbe.command.dto.OrderItem;
-
-import java.util.List;
+import org.example.orchidbe.command.dtos.CreateOrderRequestDTO;
 
 public interface IOrderCommandService {
     public void createOrder(CreateOrderRequestDTO request);

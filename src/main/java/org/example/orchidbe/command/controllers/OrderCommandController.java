@@ -1,15 +1,13 @@
 package org.example.orchidbe.command.controllers;
 
 
-import org.example.orchidbe.command.dto.CreateOrderRequestDTO;
-import org.example.orchidbe.command.dto.OrderItem;
+import org.example.orchidbe.command.dtos.CreateOrderRequestDTO;
 import org.example.orchidbe.command.services.define.IOrderCommandService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("${api.command-path}/order")
 public class OrderCommandController {

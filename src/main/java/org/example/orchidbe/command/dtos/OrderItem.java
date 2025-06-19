@@ -1,10 +1,8 @@
-package org.example.orchidbe.command.dto;
+package org.example.orchidbe.command.dtos;
 
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.List;
 
 @Data
 @Getter

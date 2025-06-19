@@ -1,13 +1,8 @@
-package org.example.orchidbe.command.dto;
+package org.example.orchidbe.command.dtos;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.OneToMany;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import org.example.orchidbe.command.entities.OrderEntity;
-
-import java.util.List;
 
 @Data
 @Getter

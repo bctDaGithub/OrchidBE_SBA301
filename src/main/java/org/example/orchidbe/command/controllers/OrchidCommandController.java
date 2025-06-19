@@ -1,12 +1,13 @@
 package org.example.orchidbe.command.controllers;
 
-import org.example.orchidbe.command.dto.OrchidEntityDTO;
+import org.example.orchidbe.command.dtos.OrchidEntityDTO;
 import org.example.orchidbe.command.entities.OrchidEntity;
 import org.example.orchidbe.command.services.define.IOrchidCommandService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("${api.command-path}/orchid")
 public class OrchidCommandController {
