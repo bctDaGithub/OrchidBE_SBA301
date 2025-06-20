@@ -1,5 +1,7 @@
 package org.example.orchidbe.query.controllers;
 
+import org.example.orchidbe.command.entities.AccountEntity;
+import org.example.orchidbe.command.repositories.AccountRepository;
 import org.example.orchidbe.jwt.JwtUtil;
 import org.example.orchidbe.query.dtos.LoginRequest;
 import org.example.orchidbe.query.dtos.LoginResponse;
@@ -17,6 +19,9 @@ public class AuthQueryController {
 
     @Autowired
     private AuthQueryService authService;
+
+    @Autowired
+    private  AccountRepository accountRepository;
 
     private final JwtUtil jwtUtil;
 
@@ -38,7 +43,16 @@ public class AuthQueryController {
         }
 
         String username = jwtUtil.getUsernameFromToken(refreshToken);
-        String newAccessToken = jwtUtil.generateAccessToken(username);
+
+        AccountEntity user = null;
+        try {
+            user = accountRepository.findByEmail(username)
+                    .orElseThrow(() -> new Exception("User not found"));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        String newAccessToken = jwtUtil.generateAccessToken(user.getId(), user.getUserName(), user.getEmail(), user.getRoleEntity().getRoleName());
 
         return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
     }

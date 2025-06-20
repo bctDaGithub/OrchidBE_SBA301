@@ -12,7 +12,7 @@ import java.security.MessageDigest;
 import java.util.Base64;
 
 @Service
-public class   AuthQueryService {
+public class AuthQueryService {
 
     @Autowired
     private AccountRepository accountRepository;
@@ -24,7 +24,7 @@ public class   AuthQueryService {
     private RefreshTokenService refreshTokenService;
 
     public LoginResponse login(LoginRequest request) throws Exception {
-        AccountEntity user = accountRepository.findByUserName(request.getUsername())
+        AccountEntity user = accountRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new Exception("User not found"));
 
 //        String hashedInputPassword = hashMD5(request.getPassword());
@@ -34,8 +34,9 @@ public class   AuthQueryService {
             throw new Exception("Invalid password");
         }
 
-        String accessToken = jwtUtil.generateAccessToken(user.getUserName());
-        String refreshToken = jwtUtil.generateRefreshToken(user.getUserName());
+        String accessToken = jwtUtil.generateAccessToken(user.getId(), user.getUserName(), user.getEmail(), user.getRoleEntity().getRoleName());
+        String refreshToken = jwtUtil.generateRefreshToken(user.getId(), user.getUserName(), user.getEmail(), user.getRoleEntity().getRoleName());
+
 
         refreshTokenService.save(user.getId(), refreshToken);
         return new LoginResponse(accessToken, refreshToken);

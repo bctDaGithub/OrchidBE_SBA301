@@ -18,17 +18,20 @@ public class JwtUtil {
     @Value("${jwt.refreshExpirationMs}")
     private long refreshExpirationMs;
 
-    public String generateAccessToken(String username) {
-        return generateToken(username, jwtExpirationMs);
+    public String generateAccessToken(Long id, String username, String email, String role) {
+        return generateToken(id, username, email, role, jwtExpirationMs);
     }
 
-    public String generateRefreshToken(String username) {
-        return generateToken(username, refreshExpirationMs);
+    public String generateRefreshToken(Long id, String username, String email, String role) {
+        return generateToken(id, username, email, role, refreshExpirationMs);
     }
 
-    private String generateToken(String username, long expiration) {
+    private String generateToken(Long id, String username, String email, String role, long expiration) {
         return Jwts.builder()
                 .setSubject(username)
+                .claim("userId", id)
+                .claim("email", email)
+                .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
