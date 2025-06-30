@@ -14,7 +14,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.security.MessageDigest;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
@@ -33,7 +33,7 @@ public class AccountCommandService implements IAccountCommandService {
     @Override
     @Transactional
     public void createAccount(String username, String password, String email) {
-        // Tạo và lưu AccountEntity vào SQL Server
+        password = hashMD5(password);
         AccountEntity accountEntity = new AccountEntity(username, email, password);
         RoleEntity role = roleRepository.findByRoleName("Customer")
                 .orElseThrow(() -> new RuntimeException("Role not found"));
@@ -41,16 +41,14 @@ public class AccountCommandService implements IAccountCommandService {
         accountEntity.setAvailable(true);
         AccountEntity savedAccount = accountRepository.save(accountEntity);
 
-        // Tạo sự kiện AccountCreatedEvent
         AccountCreatedEvent event = new AccountCreatedEvent();
         event.setId(savedAccount.getId());
         event.setUserName(savedAccount.getUserName());
         event.setEmail(savedAccount.getEmail());
         event.setRoleName(savedAccount.getRoleEntity().getRoleName());
-        event.setOrderIds(new HashSet<>()); // Khởi tạo rỗng vì tài khoản mới không có đơn hàng
+        event.setOrderIds(new HashSet<>());
         event.setAvailable(savedAccount.isAvailable());
 
-        // Gửi sự kiện qua RabbitMQ
         rabbitTemplate.convertAndSend("accountExchange", "account.created", event);
     }
 
@@ -67,8 +65,9 @@ public class AccountCommandService implements IAccountCommandService {
             accountEntity.setEmail(email);
         }
         if (newPassword != null && !newPassword.isEmpty() && currentPassword != null && !currentPassword.isEmpty()) {
-            if (accountEntity.getPassword().equals(currentPassword)) {
-                accountEntity.setPassword(newPassword);
+            String hashedCurrentPassword = hashMD5(currentPassword);
+            if (accountEntity.getPassword().equals(hashedCurrentPassword)) {
+                accountEntity.setPassword(hashMD5(newPassword));
             } else {
                 throw new RuntimeException("Current password is incorrect");
             }
@@ -76,7 +75,6 @@ public class AccountCommandService implements IAccountCommandService {
 
         AccountEntity updatedAccount = accountRepository.save(accountEntity);
 
-        // Tạo sự kiện AccountUpdatedEvent
         AccountUpdatedEvent event = new AccountUpdatedEvent();
         event.setId(updatedAccount.getId());
         event.setUserName(updatedAccount.getUserName());
@@ -87,7 +85,6 @@ public class AccountCommandService implements IAccountCommandService {
                 : new HashSet<>());
         event.setAvailable(updatedAccount.isAvailable());
 
-        // Gửi sự kiện qua RabbitMQ
         rabbitTemplate.convertAndSend("accountExchange", "account.updated", event);
     }
 
@@ -123,5 +120,19 @@ public class AccountCommandService implements IAccountCommandService {
 
         // Gửi sự kiện qua RabbitMQ
         rabbitTemplate.convertAndSend("accountExchange", "account.unblocked", event);
+    }
+
+    private String hashMD5(String input) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] digest = md.digest(input.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for (byte b : digest) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (Exception e) {
+            throw new RuntimeException("Error hashing password", e);
+        }
     }
 }

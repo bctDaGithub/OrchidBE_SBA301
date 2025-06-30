@@ -27,24 +27,41 @@ public class AuthQueryService {
         AccountEntity user = accountRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new Exception("User not found"));
 
-//        String hashedInputPassword = hashMD5(request.getPassword());
-        String hashedInputPassword = request.getPassword();
+        String hashedInputPassword = hashMD5(request.getPassword());
 
         if (!user.getPassword().equals(hashedInputPassword)) {
             throw new Exception("Invalid password");
         }
 
-        String accessToken = jwtUtil.generateAccessToken(user.getId(), user.getUserName(), user.getEmail(), user.getRoleEntity().getRoleName());
-        String refreshToken = jwtUtil.generateRefreshToken(user.getId(), user.getUserName(), user.getEmail(), user.getRoleEntity().getRoleName());
+        String accessToken = jwtUtil.generateAccessToken(
+            user.getId(),
+            user.getUserName(),
+            user.getEmail(),
+            user.getRoleEntity().getRoleName()
+        );
 
+        String refreshToken = jwtUtil.generateRefreshToken(
+            user.getId(),
+            user.getUserName(),
+            user.getEmail(),
+            user.getRoleEntity().getRoleName()
+        );
 
         refreshTokenService.save(user.getId(), refreshToken);
         return new LoginResponse(accessToken, refreshToken);
     }
 
-    private String hashMD5(String input) throws Exception {
-        MessageDigest md = MessageDigest.getInstance("MD5");
-        byte[] digest = md.digest(input.getBytes());
-        return Base64.getEncoder().encodeToString(digest);
+    private String hashMD5(String input) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] digest = md.digest(input.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for (byte b : digest) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (Exception e) {
+            throw new RuntimeException("Error hashing password", e);
+        }
     }
 }
